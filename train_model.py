@@ -21,7 +21,7 @@ def load_assets(path):
     print(dataset)
     return dataset
 
-train_custom_model(dataset):
+def train_custom_model(dataset):
 
     model = cv2.dnn.readNetFromTorch('path_to_model.t7')
 
@@ -30,17 +30,6 @@ train_custom_model(dataset):
 
     model.setInput(blob)
     embeddings = model.forward()
-
-def test():
-    model = cv2.dnn.readNetFromTorch('path_to_model.t7')
-
-    img = cv2.imread('image.jpg')
-    blob = cv2.dnn.blobFromImage(img, 1.0, (300, 300), (104, 117, 123), swapRB=True)
-
-    model.setInput(blob)
-    embeddings = model.forward()
-   
-)
 
 if __name__ == '__main__':
 
