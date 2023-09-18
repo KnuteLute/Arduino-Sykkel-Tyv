@@ -37,6 +37,7 @@ def train_embedding_img(imgPath, detector, embedder, confidence_threshold=0.5):
 
 
 def train_embedding_person(folder, model, id):
+
     for img in folder:
         train_embedding_img(img, model)
 
