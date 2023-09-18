@@ -60,6 +60,6 @@ if __name__ == '__main__':
     train_embedding_person(datasetfiles[JET], model, JET)
     train_embedding_person(datasetfiles[SIGURD], model, SIGURD)
 
-
+# går det greit at dette er min gren
 
 
