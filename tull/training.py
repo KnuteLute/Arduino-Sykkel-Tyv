@@ -4,10 +4,11 @@ import os
 import numpy as np
 
 
-def train_embedding_img(imgPath, detector, embedder, confidence_threshold=0.5):
+def train_embedding_img(imgPath, detector, embedder, confidence_threshold=0.8):
     """
     Function takes in image path name. The detection model (for face), and embedder model.\n
-    Function returns one 128-d array of embedding , returns None if face image is too small
+    Function returns one 128-d array of embedding , returns None if face image is too small, or it does not
+    recognize the image
     """
     img = cv2.imread(imgPath)
     img = imgPath.resize(img, width=600)
@@ -26,12 +27,12 @@ def train_embedding_img(imgPath, detector, embedder, confidence_threshold=0.5):
             face = img[startY:endY, startX:endX]
             fH, fW = face.shape[:2]
             if fW < 20 or fH < 20:
-                return None  #
+                return None
 
             faceBlob = cv2.dnn.blobFromImage(face, 1.0 / 255, (96, 96), (0, 0, 0), swapRB=True, crop=False)
             embedder.setInput(faceBlob)
             vec = embedder.forward()
-            return vec.flatten
+            return vec.flatten()
         else:
             return None
 
