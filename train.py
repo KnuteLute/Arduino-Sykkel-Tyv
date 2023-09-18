@@ -20,3 +20,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     model = cv2.dnn.readNetFromTorch('nn4.small2.v1.t7')
+
+    # nå har jeg bare gjort en liten endring her 
