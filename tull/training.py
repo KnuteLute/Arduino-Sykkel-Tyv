@@ -15,7 +15,6 @@ def train_embedding_img(imgPath, detector, embedder, confidence_threshold=0.5):
     blob = cv2.dnn.blobFromImage(imgPath, 1.0, (300, 300), (104, 117, 123), swapRB=True)
 
     detector.setInput(blob)
-
     embeddings = detector.forward()
     if len(embeddings) > 0:
         i = np.argmax(embeddings[0, 0, :, 2])
