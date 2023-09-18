@@ -1,3 +1,4 @@
 
-def check_face(model_embedding, model_classification):
-	throw NotImplementedError()
+def run(embeddings_model, name_models):
+	# her skjer face recognition, vet ikke helt hvordana
+	raise NotImplementedError()

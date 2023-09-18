@@ -1,4 +1,0 @@
-ASK=1
-KNUT=2
-JET=4
-SIGURD=3
