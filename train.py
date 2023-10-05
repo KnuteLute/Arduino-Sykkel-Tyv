@@ -9,8 +9,8 @@ from tull.utils import ASK, KNUT, JET, SIGURD, ANDRE
 if __name__ == '__main__':
 
     # force command line arguments
-    parser = argparse.ArgumentParser(description='this script train a model for recognising the faces of the legendary Ask, Knut, Sigurd and Jet')
-    parser.add_argument('-d', '--data', required=True, help='provide file path to training datset containing folders Ask, Knut, Sigurd and Jet, containing corresponding images')
+    parser = argparse.ArgumentParser(description='this script trains a model for recognising the faces of the legendary Ask, Knut, Sigurd and Jet')
+    parser.add_argument('-d', '--data', required=True, help='provide file path to training datset containing folders Ask, Knut, Sigurd, Jet and Vanlige_Ansikter_ containing corresponding images')
 
     args = parser.parse_args()
 
