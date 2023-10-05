@@ -1,8 +1,16 @@
-from tull.utils import ASK, KNUT, JET, SIGURD
+from tull.utils import ASK, KNUT, JET, SIGURD, ANDRE
 
 def load_dataset(path):
-    raise NotImplementedError()
-    return {'a':['1', '2', '3'], 'b':['1', '2', '3'], 'c':['1', '2', '3'], }
+    folders = ['Ask', 'Knut', 'Jet', 'Sigurd', 'Vanlige_Ansikter_']
+    if not (folders <= os.listdir(path)):
+        raise Exception('expected different folder')
+
+    dataset = {}
+    for folder, id in zip(folders, [ASK, KNUT, KRISTOFFER, SIGURD, ANDRE]):
+        for filepath in os.listdir(os.path.join(path, folder)):
+            dataset.insert(id, filepath)
+
+    return dataset
  
 def save_weights(weights, filename, folder='models'):
     raise NotImplementedError()
