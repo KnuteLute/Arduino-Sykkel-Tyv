@@ -43,3 +43,7 @@ def train_embedding_person(folder, model, id):
         train_embedding_img(img, model)
 
 # def get_final_embeddings(id):
+
+
+model = cv2.dnn.readNetFromTorch('../models/nn4.small2.v1.t7')
+detector = cv2.dnn.readNetFromCaffe('../models/deploy.prototxt.txt', '../res10_300x300_ssd_iter_140000.caffemodel')
