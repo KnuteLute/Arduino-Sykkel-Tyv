@@ -1,4 +1,4 @@
-from embeddings_model import get_embeddings
+from embeddings_model import *
 import os
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split
@@ -17,7 +17,7 @@ fir = "../../dataset/Vanlige_ansikter_/604ansikter"
 def embeddings(image_path, label):
     image = cv2.imread(image_path)
     # Assuming you have a function to obtain the 512-dimensional embeddings
-    embedding = get_embeddings(image)
+    embedding = get_embeddings(cropp_face(image))
     if embedding is None:
         return
     X.append(embedding.flatten())
