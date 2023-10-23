@@ -1,6 +1,8 @@
 from sklearn.svm import SVC
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import accuracy_score
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix, classification_report
 from embeddings_model import *
 import os
 from joblib import dump
@@ -45,7 +47,7 @@ for i in images:
 images = os.listdir(eir)
 for i in images:
     image_path = os.path.join(eir, i)
-    embeddings(image_path, label=0)
+    embeddings(image_path, label=1)
 
 
 # Process the second set of images (label 1)
@@ -57,9 +59,8 @@ for j in images:
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
 
 # Create and train SVM classifier
-clf = SVC(kernel='linear')
+clf = SVC(kernel='sigmoid')
 clf.fit(X_train, y_train)
-dump(clf, 'svm_face_model.joblib')
 
 # Predict on the test set
 y_pred = clf.predict(X_test)
@@ -67,3 +68,4 @@ y_pred = clf.predict(X_test)
 # Evaluate the model
 accuracy = accuracy_score(y_test, y_pred)
 print(f"Accuracy: {accuracy * 100:.2f}%")
+dump(clf, 'svm_face_model.joblib')

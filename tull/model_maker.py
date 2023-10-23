@@ -57,6 +57,7 @@ X = np.array(X)
 Y = np.array(Y)
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 k = 3  # Choose the number of neighbors (you can adjust this)
+# k = 1 accuracy = 1
 knn_classifier = KNeighborsClassifier(n_neighbors=k)
 knn_classifier.fit(X_train, y_train)
 y_pred = knn_classifier.predict(X_test)
