@@ -35,19 +35,25 @@ while True:
             # Flatten the embedding
             flattened_embedding = embedding.flatten()
 
+            preds = loaded_svm_model.predict_proba([flattened_embedding])[0]
+            j = np.argmax(preds)
+            proba = preds[j]
+            print(proba)
             label = loaded_svm_model.predict([flattened_embedding])[0]
-            if label == 0:
+            if label == 0 and proba < 0.9:
                 # Use the loaded KNeighborsClassifier model to predict the label
                 label = loaded_model.predict([flattened_embedding])[0]
-            else:
+            elif label == 1 and proba > 0.9:
                 label = "Vanlig Ansikt"
+            else:
+                label = "Ukjent"
             # decision = loaded_model.decision_function([flattened_embedding])
 
             # Calculate the confidence (normalized distance from the decision boundary)
             # confidence = 1 / (1 + np.exp(-decision))
 
             # Display the label and confidence on the frame
-            label_text = "Person " + str(label)
+            label_text = "Person " + str(label) + " " + str(round(proba,4)) + "%"
             # accuracy_text = "Confidence: {:.2f}%".format(confidence[0] * 100)
 
             cv2.putText(frame, label_text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)

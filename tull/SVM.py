@@ -6,6 +6,7 @@ from sklearn.metrics import confusion_matrix, classification_report
 from embeddings_model import *
 import os
 from joblib import dump
+from sklearn.preprocessing import LabelEncoder
 
 X = []
 Y = []
@@ -47,7 +48,7 @@ for i in images:
 images = os.listdir(eir)
 for i in images:
     image_path = os.path.join(eir, i)
-    embeddings(image_path, label=1)
+    embeddings(image_path, label=0)
 
 
 # Process the second set of images (label 1)
@@ -56,16 +57,7 @@ for j in images:
     image_path = os.path.join(fir, j)
     embeddings(image_path, label=1)
 
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
-
-# Create and train SVM classifier
-clf = SVC(kernel='sigmoid')
-clf.fit(X_train, y_train)
-
+recognizer = SVC(C=1.0, kernel="linear", probability=True)
+recognizer.fit(X, Y)
 # Predict on the test set
-y_pred = clf.predict(X_test)
-
-# Evaluate the model
-accuracy = accuracy_score(y_test, y_pred)
-print(f"Accuracy: {accuracy * 100:.2f}%")
-dump(clf, 'svm_face_model.joblib')
+dump(recognizer, 'svm_face_model.joblib')
