@@ -11,6 +11,10 @@ X = []
 Y = []
 
 dir = "../../dataset/Knut"
+pir = "../../dataset/Ask"
+rir = "../../dataset/Sigurd"
+eir = "../../dataset/Jet"
+
 fir = "../../dataset/Vanlige_ansikter_/604ansikter"
 
 
@@ -28,13 +32,29 @@ def embeddings(image_path, label):
 images = os.listdir(dir)
 for i in images:
     image_path = os.path.join(dir, i)
-    embeddings(image_path, label=0)
+    embeddings(image_path, label="Knut")
+
+images = os.listdir(pir)
+for i in images:
+    image_path = os.path.join(pir, i)
+    embeddings(image_path, label="Ask")
+
+images = os.listdir(rir)
+for i in images:
+    image_path = os.path.join(rir, i)
+    embeddings(image_path, label="Sigurd")
+
+images = os.listdir(eir)
+for i in images:
+    image_path = os.path.join(eir, i)
+    embeddings(image_path, label="Jet")
+
 
 # Process the second set of images (label 1)
 images = os.listdir(fir)
 for j in images:
     image_path = os.path.join(fir, j)
-    embeddings(image_path, label=1)
+    embeddings(image_path, label="Vanlig")
 
 # Convert lists to NumPy arrays
 X = np.array(X)

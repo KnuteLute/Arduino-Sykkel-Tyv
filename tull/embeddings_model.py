@@ -24,7 +24,6 @@ def cropp_face(img):
 
 def get_embeddings(image):
     #image = cropp_face(image)
-    print(image)
     if image is None:
         return None
     image = cv2.resize(image, (160, 160))  # Resize to (160, 160) pixels
