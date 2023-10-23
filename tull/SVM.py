@@ -1,11 +1,9 @@
-from embeddings_model import *
-import os
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-import numpy as np
-import cv2
-import joblib
+from embeddings_model import *
+import os
+from joblib import dump
 
 X = []
 Y = []
@@ -32,36 +30,40 @@ def embeddings(image_path, label):
 images = os.listdir(dir)
 for i in images:
     image_path = os.path.join(dir, i)
-    embeddings(image_path, label="Knut")
+    embeddings(image_path, label=0)
 
 images = os.listdir(pir)
 for i in images:
     image_path = os.path.join(pir, i)
-    embeddings(image_path, label="Ask")
+    embeddings(image_path, label=0)
 
 images = os.listdir(rir)
 for i in images:
     image_path = os.path.join(rir, i)
-    embeddings(image_path, label="Sigurd")
+    embeddings(image_path, label=0)
 
 images = os.listdir(eir)
 for i in images:
     image_path = os.path.join(eir, i)
-    embeddings(image_path, label="Jet")
+    embeddings(image_path, label=0)
 
 
 # Process the second set of images (label 1)
+images = os.listdir(fir)
+for j in images:
+    image_path = os.path.join(fir, j)
+    embeddings(image_path, label=1)
 
-# Convert lists to NumPy arrays
-X = np.array(X)
-Y = np.array(Y)
-X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
-k = 3  # Choose the number of neighbors (you can adjust this)
-knn_classifier = KNeighborsClassifier(n_neighbors=k)
-knn_classifier.fit(X_train, y_train)
-y_pred = knn_classifier.predict(X_test)
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2)
+
+# Create and train SVM classifier
+clf = SVC(kernel='linear')
+clf.fit(X_train, y_train)
+dump(clf, 'svm_face_model.joblib')
+
+# Predict on the test set
+y_pred = clf.predict(X_test)
+
+# Evaluate the model
 accuracy = accuracy_score(y_test, y_pred)
-print("Accuracy:", accuracy)
-
-model_filename = "knn_face_recognition_model1.pkl"
-joblib.dump(knn_classifier, model_filename)
+print(f"Accuracy: {accuracy * 100:.2f}%")

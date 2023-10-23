@@ -4,8 +4,9 @@ import numpy as np
 from embeddings_model import *
 
 # Load the trained KNeighborsClassifier model
-model_filename = "knn_face_recognition_model.pkl"
+model_filename = "knn_face_recognition_model1.pkl"
 loaded_model = joblib.load(model_filename)
+loaded_svm_model = joblib.load("svm_face_model.joblib")
 
 # Load a face detection classifier (e.g., Haar Cascade or a deep learning model)
 # You'll need to download and load a pre-trained face detection model here
@@ -34,8 +35,12 @@ while True:
             # Flatten the embedding
             flattened_embedding = embedding.flatten()
 
-            # Use the loaded KNeighborsClassifier model to predict the label
-            label = loaded_model.predict([flattened_embedding])[0]
+            label = loaded_svm_model.predict([flattened_embedding])[0]
+            if label == 0:
+                # Use the loaded KNeighborsClassifier model to predict the label
+                label = loaded_model.predict([flattened_embedding])[0]
+            else:
+                label = "Vanlig Ansikt"
             # decision = loaded_model.decision_function([flattened_embedding])
 
             # Calculate the confidence (normalized distance from the decision boundary)
