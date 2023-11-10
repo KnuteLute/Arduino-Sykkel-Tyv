@@ -1,24 +1,60 @@
 import sys
 import argparse
+import os
+import cv2
+import random
+from tull import embeddings_model, file, utils, classification_model
+from tull.utils import ASK, KNUT, JET, SIGURD, ANDRE
 
 if __name__ == '__main__':
 
-    args = sys.argv
-
-    if len(args) != 2:
-        sys.exit('please provide a path to dataset as command line argument, example: \"python train_model.py dataset\"')
-    else:        
-        path = sys.argv[1]
-
-    datasetfiles = load_assets(path)
-
-
-
-    parser = argparse.ArgumentParser(description='this script train a model for recognising the faces of the legendary Ask, Knut, Sigurd and Jet')
-    parser.add_argument('-d', '--data', required=True, help='provide file path to training datset containing folders Ask, Knut, Sigurd and Jet, containing corresponding images')
+    # force command line arguments
+    parser = argparse.ArgumentParser(description='this script trains a model for recognising the faces of the legendary Ask, Knut, Sigurd and Jet')
+    parser.add_argument('-d', '--data', required=True, help='provide file path to training datset containing folders Ask, Knut, Sigurd, Jet and Vanlige_Ansikter_ containing corresponding images')
 
     args = parser.parse_args()
 
-    model = cv2.dnn.readNetFromTorch('nn4.small2.v1.t7')
+    # run program
+    print('reading dataset names')
+    name_pictures = file.load_dataset(args.data)
 
-    # nå har jeg bare gjort en liten endring her 
+    name_embeddings = {
+        ASK:[],
+        KNUT:[],
+        JET:[], 
+        SIGURD:[],
+        ANDRE:[],
+    }
+
+    print('loading embedding model')
+    embeddings_model = cv2.dnn.readNetFromTorch(os.path.join('models', 'nn4.small2.v1.t7'))
+
+    print('retrieving embeddings from model')
+    for name, pics in name_pictures:
+        for pic in pics:
+            name_embeddings[name].append(embeddings_model.get_embeddings(pic, embeddings_model))
+
+    print('training classification models')
+    name_weights = {
+        ASK:[],
+        KNUT:[],
+        JET:[], 
+        SIGURD:[],
+    }
+    for name, embeddings in name_embeddings:
+
+        classification_model = classification_model.ClassificationModel()
+        classification_model.setAnchor(random.choice(name_embeddings[name]))
+
+        for embedding in embeddings:
+            classification_model.forward(embedding, random.choice(name_embeddings[ANDRE]))
+
+        name_weights[name].append(classification_model.get_weights())
+           
+    print('saving classification models')
+    file.save_weights(name_weights[ASK], 'ask')
+    file.save_weights(name_weights[KNUT], 'knut')
+    file.save_weights(name_weights[JET], 'jet')
+    file.save_weights(name_weights[SIGURD], 'sigurd')
+
+    print('training done')
