@@ -40,7 +40,7 @@ while True:
             proba = preds[j]
             print(proba)
             label = loaded_svm_model.predict([flattened_embedding])[0]
-            if label == 0 :
+            if label == 0:
                 # Use the loaded KNeighborsClassifier model to predict the label
                 label = loaded_model.predict([flattened_embedding])[0]
             else:
