@@ -2,72 +2,106 @@ import cv2
 import joblib
 import numpy as np
 from embeddings_model import *
+import time
+from playsound import playsound
 
-# Load the trained KNeighborsClassifier model
-model_filename = "knn_face_recognition_model1.pkl"
+# Load the trained models
+model_filename = "tull\knn_face_recognition_model_ny.pkl"
 loaded_model = joblib.load(model_filename)
-loaded_svm_model = joblib.load("svm_face_model.joblib")
-
-# Load a face detection classifier (e.g., Haar Cascade or a deep learning model)
-# You'll need to download and load a pre-trained face detection model here
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+loaded_svm_model = joblib.load("tull\svm_face_model_ny.joblib")
+face_cascade = cv2.CascadeClassifier('tull\haarcascade_frontalface_default.xml')
 
 # Initialize the webcam capture
-cap = cv2.VideoCapture(0)  # Use 0 for the default webcam, or adjust as needed
+cap = cv2.VideoCapture(0)
+
+# Alarm and timing variables
+alarm_triggered = False
+start_time = time.time()
+approved_start_time = None
+alarm_deactivated_time = None
+
+# Variables for motion detection
+first_frame = None
+area_of_interest = (300, 100, 600, 300)  # Define your ROI (x, y, width, height)
 
 while True:
-    ret, frame = cap.read()  # Read a frame from the webcam
-    # Convert the frame to grayscale for face detection
+    ret, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Perform face detection on the grayscale frame
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(160, 160))
 
-    # Iterate through detected faces
+    # Motion Detection Logic
+    gray_blur = cv2.GaussianBlur(gray, (21, 21), 0)
+    if first_frame is None:
+        first_frame = gray_blur
+        continue
+
+    frame_delta = cv2.absdiff(first_frame, gray_blur)
+    thresh = cv2.threshold(frame_delta, 25, 255, cv2.THRESH_BINARY)[1]
+    thresh = thresh[area_of_interest[1]:area_of_interest[1] + area_of_interest[3],
+                    area_of_interest[0]:area_of_interest[0] + area_of_interest[2]]
+    thresh = cv2.dilate(thresh, None, iterations=2)
+    contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # If contours are found, motion is detected
+    if len(contours) > 0:
+        if not alarm_triggered:
+            start_time = time.time()
+            alarm_triggered = True
+
+    face_detected = False
+    approved_face_detected = False
+
+    # Face Recognition Logic
     for (x, y, w, h) in faces:
-        # Extract the face region from the frame
+        face_detected = True
         face = frame[y:y + h, x:x + w]
         face = cv2.resize(face, (160, 160))
-
-        # Obtain the face embedding using your get_embeddings function
         embedding = get_embeddings(face)
-        if embedding is not None:
-            # Flatten the embedding
-            flattened_embedding = embedding.flatten()
 
+        if embedding is not None:
+            flattened_embedding = embedding.flatten()
             preds = loaded_svm_model.predict_proba([flattened_embedding])[0]
             j = np.argmax(preds)
             proba = preds[j]
-            print(proba)
             label = loaded_svm_model.predict([flattened_embedding])[0]
-            if label == 0 :
-                # Use the loaded KNeighborsClassifier model to predict the label
+            if label == 0 and proba > 0.85:
                 label = loaded_model.predict([flattened_embedding])[0]
+                if label in ["Jet", "Sigurd", "Knut", "Ask"]:
+                    if approved_start_time is None:
+                        approved_start_time = time.time()
+                    approved_face_detected = True
+                else:
+                    approved_start_time = None
             else:
                 label = "Vanlig Ansikt"
+                approved_start_time = None
 
-            # decision = loaded_model.decision_function([flattened_embedding])
-
-            # Calculate the confidence (normalized distance from the decision boundary)
-            # confidence = 1 / (1 + np.exp(-decision))
-
-            # Display the label and confidence on the frame
-            label_text = "Person " + str(label) + " " + str(round(proba,4)) + "%"
-            # accuracy_text = "Confidence: {:.2f}%".format(confidence[0] * 100)
-
+            label_text = "Person " + str(label) + " " + str(round(proba, 4)) + "%"
             cv2.putText(frame, label_text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-            # cv2.putText(frame, accuracy_text, (x, y + h + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        # Draw a rectangle around the detected face
         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-    # Display the frame with face recognition results
+    # Check if the alarm should be triggered
+    if not approved_face_detected and (time.time() - start_time > 25) and alarm_triggered:
+        playsound("tull/alarm_sound.mp3")
+        print("Alarm triggered")
+
+    # Check if an approved face has been detected continuously for 3 seconds
+    if approved_face_detected and approved_start_time is not None:
+        if time.time() - approved_start_time >= 3:
+            alarm_triggered = False
+            alarm_deactivated_time = time.time()
+            print("Alarm deactivated")
+
+    if alarm_deactivated_time is not None and (time.time() - alarm_deactivated_time > 120):
+        alarm_triggered = True
+        alarm_deactivated_time = None
+        print("Alarm activated")
+
     cv2.imshow('Face Recognition', frame)
 
-    # Press 'q' to exit the loop
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release the webcam and close the OpenCV window
 cap.release()
 cv2.destroyAllWindows()

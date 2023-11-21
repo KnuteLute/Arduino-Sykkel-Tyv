@@ -57,7 +57,7 @@ for j in images:
     image_path = os.path.join(fir, j)
     embeddings(image_path, label=1)
 
-recognizer = SVC(C=1.0, kernel="linear", probability=True)
+recognizer = SVC(C=1.0, kernel="rbf", probability=True)
 recognizer.fit(X, Y)
 # Predict on the test set
-dump(recognizer, 'svm_face_model.joblib')
+dump(recognizer, 'svm_face_model.joblib_ny')
