@@ -1,11 +1,12 @@
 # Arduino-Sykkel-Tyv
-Catching the fucking bike thieve 
+Catching the fucking bike thief
 
-To train the model, do `python train_model.py <path to dataset>`.
+To train the model SVM, do `python SVM.py`.
+To train the model KNN, do `python model_maker.py`.
 
 To run facial detection on Ask, Knut, Sigurd and Jet:
 - install libraries, virtual environment recommended
-- do `python run.py`
+- do `python video.py`
 
 To train the facial detection model:
 - install libraries, virtual environment recommended

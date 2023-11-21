@@ -38,24 +38,24 @@ for i in images:
 images = os.listdir(pir)
 for i in images:
     image_path = os.path.join(pir, i)
-    embeddings(image_path, label=0)
+    embeddings(image_path, label=1)
 
 images = os.listdir(rir)
 for i in images:
     image_path = os.path.join(rir, i)
-    embeddings(image_path, label=0)
+    embeddings(image_path, label=2)
 
 images = os.listdir(eir)
 for i in images:
     image_path = os.path.join(eir, i)
-    embeddings(image_path, label=0)
+    embeddings(image_path, label=3)
 
 
 # Process the second set of images (label 1)
 images = os.listdir(fir)
 for j in images:
     image_path = os.path.join(fir, j)
-    embeddings(image_path, label=1)
+    embeddings(image_path, label=4)
 
 recognizer = SVC(C=1.0, kernel="rbf", probability=True)
 recognizer.fit(X, Y)
